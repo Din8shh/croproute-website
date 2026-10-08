@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CropRoute — From root to route</title>
+<meta name="description" content="CropRoute is building the digital rails of India’s crop value chain — connecting the farmers, retailers, traders and processors who move a crop from field to market.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/*
+  Brand inks — exactly these five + one declared tint (Starter Kit A3).
+  Weights 400 / 600 only (A5).
+*/
+:root {
+  --teal: #0E8074;   /* Route Teal */
+  --ink: #10332E;    /* Ink */
+  --sage: #527571;   /* Sage */
+  --mist: #EDF4F3;   /* Mist */
+  --white: #FFFFFF;  /* White */
+  --ramp: #0B665D;   /* Ramp tint — arc motif on teal grounds only */
+
+  --wrap: 1140px;
+  --gutter: clamp(20px, 5vw, 48px);
+  --section-pad: clamp(72px, 10vw, 128px);
+  --mono: 'IBM Plex Mono', monospace;
+  --deva: 'Noto Sans Devanagari', 'IBM Plex Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); background: var(--white); -webkit-font-smoothing: antialiased; }
+a { color: var(--teal); }
+a:hover { color: var(--ink); }
+h1, h2, p { margin: 0; }
+
+/* ---------- Reusable shells ---------- */
+.wrap { position: relative; max-width: var(--wrap); margin: 0 auto; padding: var(--section-pad) var(--gutter); }
+.section { background: var(--white); }
+.section--mist { background: var(--mist); }
+.section[id] { scroll-margin-top: 72px; }
+.arc { position: absolute; pointer-events: none; }
+
+.h2 { font-weight: 600; color: var(--ink); font-size: clamp(32px, 4.5vw, 48px); line-height: 1.15; }
+.lede { margin: 20px 0 48px; color: var(--sage); font-size: clamp(17px, 2vw, 19px); line-height: 1.6; max-width: 640px; }
+
+.btn { display: inline-block; text-decoration: none; font-weight: 600; border-radius: 4px; }
+.btn--teal { background: var(--teal); color: var(--white); font-size: 16px; padding: 10px 20px; }
+.btn--teal:hover { background: var(--ink); color: var(--white); }
+.btn--paper { background: var(--white); color: var(--teal); font-size: 17px; padding: 14px 28px; }
+.btn--paper:hover { background: var(--mist); color: var(--teal); }
+
+/* ---------- Nav ---------- */
+.nav { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--mist); }
+.nav__inner { max-width: var(--wrap); margin: 0 auto; padding: 14px var(--gutter); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 28px; }
+.nav__brand { text-decoration: none; color: var(--ink); font-weight: 600; font-size: 22px; line-height: 1; }
+.nav__brand:hover { color: var(--ink); }
+.nav__links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 28px; }
+.nav__link { text-decoration: none; color: var(--ink); font-size: 16px; }
+.nav__link:hover { color: var(--teal); }
+
+/* ---------- Hero (teal ground, flat #0E8074) ---------- */
+.hero { position: relative; overflow: hidden; background: var(--teal); }
+.hero .arc { right: -180px; bottom: -160px; width: 700px; height: 700px; }
+.hero .wrap { padding: clamp(64px, 9vw, 128px) var(--gutter) clamp(88px, 12vw, 160px); }
+.hero__brand { color: var(--white); font-weight: 600; font-size: 24px; }
+.hero__title { margin-top: clamp(40px, 6vw, 72px); color: var(--white); font-weight: 600; font-size: clamp(44px, 7.5vw, 88px); line-height: 1.05; }
+.hero__deva { margin-top: 20px; color: var(--mist); font-family: var(--deva); font-size: clamp(20px, 3vw, 28px); }
+.hero__sub { margin-top: 28px; color: var(--mist); font-size: clamp(17px, 2vw, 19px); line-height: 1.65; max-width: 620px; }
+.hero .btn { margin-top: 40px; }
+
+/* ---------- Definition ---------- */
+.def { max-width: 800px; }
+.def__word { font-weight: 600; color: var(--ink); font-size: clamp(40px, 6vw, 64px); line-height: 1.1; }
+.def__phon { margin-top: 12px; color: var(--sage); font-size: clamp(17px, 2vw, 20px); }
+.def__list { margin: 40px 0 0; padding: 0; list-style: none; display: grid; gap: 22px; }
+.def__item { display: grid; grid-template-columns: 36px 1fr; gap: 16px; align-items: baseline; }
+.def__num { font-family: var(--mono); color: var(--sage); font-size: 16px; }
+.def__text { color: var(--ink); font-size: clamp(19px, 2.2vw, 22px); line-height: 1.55; }
+
+/* ---------- The Route ---------- */
+.stops { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--teal); }
+.stop { display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: baseline; border-top: 1px solid var(--teal); padding: 24px 0; }
+.stop__num { font-family: var(--mono); color: var(--sage); font-size: 15px; width: 36px; }
+.stop__name { font-weight: 600; color: var(--ink); font-size: 22px; flex: 0 0 170px; }
+.stop__desc { color: var(--sage); font-size: 17px; line-height: 1.6; flex: 1 1 300px; }
+
+/* ---------- The Apps ---------- */
+.apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.app { background: var(--mist); padding: 28px; display: flex; flex-direction: column; gap: 10px; }
+.app__master { color: var(--sage); font-size: 15px; }
+.app__name { font-weight: 600; color: var(--ink); font-size: 26px; line-height: 1.2; }
+.app__role { color: var(--sage); font-size: 16px; line-height: 1.5; }
+.app__status { margin-top: 18px; }
+.chip { display: inline-block; font-size: 13px; border-radius: 4px; }
+.chip--active { background: var(--teal); color: var(--white); font-weight: 600; padding: 5px 12px; }
+.chip--planned { border: 1px solid var(--sage); color: var(--sage); padding: 4px 12px; }
+
+/* ---------- About ---------- */
+.about { margin-top: 28px; max-width: 720px; display: grid; gap: 20px; }
+.about p { color: var(--ink); font-size: 18px; line-height: 1.7; }
+
+/* ---------- Contact ---------- */
+.contact { position: relative; overflow: hidden; }
+.contact .arc { left: -150px; bottom: -170px; width: 500px; height: 500px; }
+.contact .lede { margin-bottom: 0; max-width: 560px; }
+.contact__email { margin-top: 28px; }
+.contact__email a { color: var(--teal); font-weight: 600; font-size: clamp(18px, 2.2vw, 21px); text-decoration: underline; text-underline-offset: 4px; }
+.contact__email a:hover { color: var(--ink); }
+
+/* ---------- Footer (ink ground) ---------- */
+.footer { background: var(--ink); }
+.footer .wrap { padding: clamp(56px, 8vw, 88px) var(--gutter) 32px; }
+.footer__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 32px 48px; }
+.footer__brand { display: grid; gap: 8px; }
+.footer__name { color: var(--white); font-weight: 600; font-size: 24px; }
+.footer__deva { color: var(--mist); font-family: var(--deva); font-size: 16px; }
+.footer__links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.footer__links a { text-decoration: none; color: var(--mist); font-size: 16px; }
+.footer__links a:hover { color: var(--white); }
+.footer__legal { margin-top: 48px; border-top: 1px solid var(--sage); padding-top: 20px; color: var(--mist); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Primary">
+  <div class="nav__inner">
+    <a class="nav__brand" href="#top">CropRoute</a>
+    <div class="nav__links">
+      <a class="nav__link" href="#route">The Route</a>
+      <a class="nav__link" href="#apps">Apps</a>
+      <a class="nav__link" href="#about">About</a>
+      <a class="nav__link" href="#contact">Contact</a>
+      <a class="btn btn--teal" href="#contact">Partner with us</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section id="top" class="hero">
+  <svg class="arc" aria-hidden="true" viewBox="0 0 700 700" fill="none">
+    <path d="M 80 700 A 520 520 0 0 1 600 180" stroke="#0B665D" stroke-width="146"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero__brand">CropRoute</div>
+    <h1 class="hero__title">From root to route.</h1>
+    <div class="hero__deva" lang="hi">बीज से बाज़ार तक</div>
+    <p class="hero__sub">CropRoute is building the digital rails of India&rsquo;s crop value chain &mdash; connecting the farmers, retailers, traders and processors who move a crop from field to market.</p>
+    <a class="btn btn--paper" href="#contact">Partner with us</a>
+  </div>
+</section>
+
+<section class="section" aria-label="Definition">
+  <div class="wrap">
+    <div class="def">
+      <h2 class="def__word">CropRoute</h2>
+      <div class="def__phon">/&#712;kr&#594;p&#183;ru&#720;t/ &#183; noun</div>
+      <ol class="def__list">
+        <li class="def__item"><span class="def__num">1</span><span class="def__text">The path a crop travels from root to market.</span></li>
+        <li class="def__item"><span class="def__num">2</span><span class="def__text">The network of people who move it &mdash; the farmer who grows it, the retailer who supplies it, the trader who buys it, the processor who transforms it.</span></li>
+        <li class="def__item"><span class="def__num">3</span><span class="def__text">The company that connects the stops on that path.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="route" class="section section--mist">
+  <div class="wrap">
+    <h2 class="h2">The Route</h2>
+    <p class="lede">Every crop in India travels a route. At every stop, information, credit and trust fail to travel to the next.</p>
+    <ol class="stops">
+      <li class="stop"><span class="stop__num">01</span><span class="stop__name">Field</span><span class="stop__desc">Advice, input availability and fair prices rarely travel back to the farm gate.</span></li>
+      <li class="stop"><span class="stop__num">02</span><span class="stop__name">Aggregation</span><span class="stop__desc">Produce changes hands on memory and word of mouth, with no record both sides can see.</span></li>
+      <li class="stop"><span class="stop__num">03</span><span class="stop__name">Mandi</span><span class="stop__desc">Prices are discovered in the yard, but seldom travel beyond it in time to matter.</span></li>
+      <li class="stop"><span class="stop__num">04</span><span class="stop__name">Trade</span><span class="stop__desc">Credit runs on personal relationships, so working capital stops where trust runs out.</span></li>
+      <li class="stop"><span class="stop__num">05</span><span class="stop__name">Processing</span><span class="stop__desc">Quality and volume upstream stay invisible until the truck arrives at the gate.</span></li>
+      <li class="stop"><span class="stop__num">06</span><span class="stop__name">Export</span><span class="stop__desc">Traceability demanded downstream cannot be assembled from paper records upstream.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="apps" class="section">
+  <div class="wrap">
+    <h2 class="h2">The apps</h2>
+    <p class="lede">The master brand holds the whole route. Each app names one stop.</p>
+    <div class="apps">
+      <div class="app">
+        <div class="app__master">CropRoute</div>
+        <div class="app__name">Dukaan</div>
+        <div class="app__role">For agri-input retailers.</div>
+        <div class="app__status"><span class="chip chip--active">First product &#183; In build</span></div>
+      </div>
+      <div class="app">
+        <div class="app__master">CropRoute</div>
+        <div class="app__name">Kisan</div>
+        <div class="app__role">For farmers.</div>
+        <div class="app__status"><span class="chip chip--planned">Planned</span></div>
+      </div>
+      <div class="app">
+        <div class="app__master">CropRoute</div>
+        <div class="app__name">Vyapar</div>
+        <div class="app__role">For trade.</div>
+        <div class="app__status"><span class="chip chip--planned">Planned</span></div>
+      </div>
+      <div class="app">
+        <div class="app__master">CropRoute</div>
+        <div class="app__name">Saathi</div>
+        <div class="app__role">For partner and field teams.</div>
+        <div class="app__status"><span class="chip chip--planned">Planned</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section section--mist">
+  <div class="wrap">
+    <h2 class="h2">About</h2>
+    <div class="about">
+      <p>CropRoute is being built by an operator who has worked every stop of the route &mdash; field sales, farmer platforms, farm mechanisation, and food value chains and export.</p>
+      <p>Independent research on the farmer&ndash;retailer interface &mdash; three papers &mdash; underpins the first product. Field research for CropRoute Dukaan runs through kharif 2026.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section contact">
+  <svg class="arc" aria-hidden="true" viewBox="0 0 500 500" fill="none">
+    <path d="M 0 160 A 340 340 0 0 1 340 500" stroke="#EDF4F3" stroke-width="95"/>
+  </svg>
+  <div class="wrap">
+    <h2 class="h2">Partner with us.</h2>
+    <p class="lede">CropRoute is pre-launch. If you work a stop on the route, write to us.</p>
+    <div class="contact__email"><a href="mailto:dinesh@croproute.in">dinesh@croproute.in</a></div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="footer__name">CropRoute</div>
+        <div class="footer__deva" lang="hi">क्रॉपरूट</div>
+      </div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="#route">The Route</a>
+        <a href="#apps">Apps</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="footer__legal">&copy; 2026 CropRoute. All rights reserved.</div>
+  </div>
+</footer>
+
+</body>
+</html>
